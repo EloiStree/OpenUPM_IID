@@ -1,0 +1,23 @@
+
+{                                                                                
+  "name": "be.elab.iid",                              
+  "displayName": "IID Index Integer Date",                        
+  "version": "0.0.1",                         
+  "unity": "2018.1",                             
+  "unityRelease": "",                             
+  "description": "Pack and unpack bytes received or to send in bytes format. Allows to defined and demonstrate what is a IID in Unity3D.",                         
+  "keywords": ["Script","Tool"],                       
+  "dependencies":{},     
+  "relatedPackages":{},     
+  "samples" : [],     
+  "author" : {
+"name":"",
+"mail":"",
+"url":""},     
+  "repository":{
+"type":"Git",
+"url":"https://github.com/EloiStree/OpenUPM_IID.git",
+"footprint":"",
+"revision":""},     
+  "category": "Script"                   
+} 
