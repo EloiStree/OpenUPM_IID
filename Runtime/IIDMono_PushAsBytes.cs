@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 
@@ -148,8 +149,3 @@ public class IIDMono_PushAsBytes : MonoBehaviour
 
 }
 
-
-public static class IIDUtility { 
-
-   
-}

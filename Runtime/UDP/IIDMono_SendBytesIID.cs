@@ -1,13 +1,11 @@
-﻿using UnityEngine;
+﻿
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace Eloi.IID
 {
     public class IIDMono_SendBytesIID : MonoBehaviour {
 
-        public string m_ntpServer = "be.pool.ntp.org";
-        public string m_ipv4="127.0.0.1";
-        public int m_port=3615;
         public bool m_useQueueThread;
         public SendBytesIID m_sender;
 
@@ -20,12 +18,23 @@ namespace Eloi.IID
         }
         void OnEnable()
         {
-            m_sender = new SendBytesIID(PushBytesToListener, m_ntpServer, m_useQueueThread);
+            m_sender = new SendBytesIID(PushBytesToListener,0, m_useQueueThread);
         }
         void OnDisable()
         {
             m_sender = null;
         }
+
+        public void SetNtpOffsetInMilliseconds(int offsetInMilliseconds)
+        {
+            m_sender.SetNtpOffsetTick(offsetInMilliseconds * (int)System.TimeSpan.TicksPerMillisecond);
+        }
+        public void SetNtpOffsetInMilliseconds(long offsetInMilliseconds)
+        {
+            int t = (int) offsetInMilliseconds;
+            m_sender.SetNtpOffsetTick(t * (int)System.TimeSpan.TicksPerMillisecond);
+        }
+       
 
         public void PushBytes(byte[] data)
         {

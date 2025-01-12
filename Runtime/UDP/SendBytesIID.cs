@@ -15,11 +15,11 @@ public class SendBytesIID
         [SerializeField] Action<byte[]> m_bytesPusherHandler;
          private IntegerTimeQueueHolder m_queueThread;
 
-    public SendBytesIID(Action<byte[]> handler, string ntpServer, bool useQueueThread = false)
+    public SendBytesIID(Action<byte[]> handler, int ntpOffset=0, bool useQueueThread = false)
     {
 
-        this.m_bytesPusherHandler = handler;
-        this.m_ntpOffsetLocalToServerInMilliseconds = 0;
+         this.m_bytesPusherHandler = handler;
+         this.m_ntpOffsetLocalToServerInMilliseconds = ntpOffset;
 
          if (useQueueThread)
          {
@@ -27,12 +27,6 @@ public class SendBytesIID
                     new IntegerTimeQueueHolder.BytesActionDelegate(handler);
              this.m_queueThread = new IntegerTimeQueueHolder(d, 1);
          }
-
-        if (!string.IsNullOrEmpty(ntpServer))
-        {
-            FetchNtpOffset(ntpServer);
-        }
-
     }
 
     public int GetNtpOffset()
@@ -71,12 +65,16 @@ public class SendBytesIID
         PushBytes(IIDUtility.IndexIntegerToBytes(index, value));
     }
 
-    public void PushIndexIntegerDate(int index, int value, int date)
-    {
-        PushBytes(IIDUtility.IndexIntegerDateToBytes(index, value, date));
-    }
+        public void PushIndexIntegerDate(int index, int value, long dateTimeStampNtpUtc)
+        {
+            PushBytes(IIDUtility.IndexIntegerDateToBytes(index, value, (ulong)dateTimeStampNtpUtc));
+        }
+        public void PushIndexIntegerDate(int index, int value, ulong dateTimeStampNtpUtc)
+        {
+            PushBytes(IIDUtility.IndexIntegerDateToBytes(index, value,dateTimeStampNtpUtc));
+        }
 
-    public void PushRandomInteger(int index, int fromValue, int toValue)
+        public void PushRandomInteger(int index, int fromValue, int toValue)
     {
         System.Random random = new System.Random();
         int value = random.Next(fromValue, toValue);
@@ -95,41 +93,44 @@ public class SendBytesIID
 
     
 
-    public void SetNtpOffsetTick(int ntpOffsetLocalToServer)
-    {
-        this.m_ntpOffsetLocalToServerInMilliseconds = ntpOffsetLocalToServer;
-    }
+        public void SetNtpOffsetTick(int ntpOffsetLocalToServer)
+        {
+            this.m_ntpOffsetLocalToServerInMilliseconds = ntpOffsetLocalToServer;
+        }
 
-    public void PushIndexIntegerDateLocalNow(int index, int value)
-    {
-        int date = (int)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000);
-        PushIndexIntegerDate(index, value, date);
-    }
+       
 
-    public void PushIndexIntegerDateNtpNow(int index, int value)
-    {
-        int date = (int)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000) + this.m_ntpOffsetLocalToServerInMilliseconds;
-        PushIndexIntegerDate(index, value, date);
-    }
+
+        public void PushIndexIntegerDateLocalNow(int index, int value)
+        {
+            IIDUtility. GetTimestampLocalMillisecondsUtc(out long timestampLocalMilliseconds);
+            PushIndexIntegerDate(index, value, timestampLocalMilliseconds);
+        }
+        public void GetTimestampMillisecondsUtcNtp(out long timestampMilliseconds)
+        {
+            IIDUtility.GetTimestampLocalMillisecondsUtc(out long timestampLocalMilliseconds);
+            timestampMilliseconds = timestampLocalMilliseconds 
+            + this.m_ntpOffsetLocalToServerInMilliseconds
+            + this.m_ntpOffsetLocalToServerInMillisecondsManualAdjustment;
+
+        }
+        public void PushIndexIntegerDateNtpNow(int index, int value)
+        {
+                  GetTimestampMillisecondsUtcNtp(out long timestampLocalMilliseconds);
+                PushIndexIntegerDate(index, value, timestampLocalMilliseconds);
+        }
 
     public void PushIndexIntegerDateNtpInMilliseconds(int index, int value, int milliseconds)
-    {
-        int date = (int)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000) + this.m_ntpOffsetLocalToServerInMilliseconds + milliseconds / 1000;
-        PushIndexIntegerDate(index, value, date);
+        {
+            GetTimestampMillisecondsUtcNtp(out long timestampLocalMilliseconds);
+            PushIndexIntegerDate(index, value, timestampLocalMilliseconds + milliseconds);
     }
 
         public void PushIndexIntegerDateNtpInSeconds(int index, int value, int seconds)
         {
         PushIndexIntegerDateNtpInMilliseconds(index, value, seconds * 1000);
         }
-        public void FetchNtpOffset(string ntpServer = "be.pool.ntp.org")
-        {
-            SetNtpOffsetTick(NtpOffsetFetcher.FetchNtpOffsetInMilliseconds(ntpServer));
-            Console.WriteLine($"NTP Offset: {this.m_ntpOffsetLocalToServerInMilliseconds}");
-        }
-
-
-
+     
         public bool IsUsingQueueThread()
         {
             return this.m_queueThread != null;
@@ -150,9 +151,5 @@ public class SendBytesIID
             this.m_queueThread.ClearQueue();
         }
 
-        internal void SetNewNtpServer(string m_ntpServer)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
