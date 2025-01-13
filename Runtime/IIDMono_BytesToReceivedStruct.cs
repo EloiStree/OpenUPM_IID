@@ -9,13 +9,15 @@ public struct STRUCT_ReceivedIID {
     public ulong date;
     public ulong receivedTimestampUTCNTP;
 }
-
 public class IIDMono_BytesToReceivedStruct : MonoBehaviour
 {
     public int m_offsetMillisecondsNTP= 0;
     public UnityEvent<STRUCT_ReceivedIID> m_onReceived;
 
-
+    public void SetNtpOffsetMilliseconds(int offsetMillisecondsNTP)
+    {
+        this.m_offsetMillisecondsNTP = offsetMillisecondsNTP;
+    }
     public void SetNtpOffsetMilliseconds(long offsetMillisecondsNTP)
     {
         this.m_offsetMillisecondsNTP = (int) offsetMillisecondsNTP;
