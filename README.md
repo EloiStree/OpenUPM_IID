@@ -1,5 +1,12 @@
+IID & 🍺.io: https://buymeacoffee.com/apintio - https://github.com/EloiStree/IID - https://github.com/EloiStree/apint.io
+
+--------------------------------------
+
 # OpenUPM_IID
-IID Utility (Without UDP, Mirror And Websockets as it is platform dependant)
+
+Index Integer Date (IID) is a transport format used to allow remote control through NTP and integers on a shared server.
+
+
 
 ```
 /*
