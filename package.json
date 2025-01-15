@@ -2,7 +2,7 @@
 {                                                                                
   "name": "be.elab.iid",                              
   "displayName": "IID Index Integer Date",                        
-  "version": "0.0.1",                         
+  "version": "2025.1.16",                         
   "unity": "2018.1",                             
   "unityRelease": "",                             
   "description": "Pack and unpack bytes received or to send in bytes format. Allows to defined and demonstrate what is a IID in Unity3D.",                         
